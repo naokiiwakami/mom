@@ -46,7 +46,7 @@ public:
         bool result = session->getI2C()->ping(address);
 
         if (result) {
-            printf("Responding at 0x%x (%d)\n", address, address);
+            printf("0x%x (%d) responded\n", address, address);
         }
         else {
             printf("No response at 0x%x (%d)\n", address, address);

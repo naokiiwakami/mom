@@ -7,7 +7,7 @@ TARGET = mom
 
 all: $(TARGET)
 
-LIBS = -lreadline -lhistory -lcurses
+LIBS = -lreadline -lhistory -lcurses -lboost_thread-mt -lboost_system-mt -lwiringPi -lpthread
 CFLAGS = -Wall -g
 
 CXXFILES = \

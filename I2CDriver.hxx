@@ -2,39 +2,41 @@
 #define _i2cdriver_hxx_
 
 #include <stdint.h>
+#include <pthread.h>
 
 #include <string>
 #include <vector>
 
 class Session;
+namespace boost {
+    class thread;
+}
 
 class I2CDriver
 {
 public:
     I2CDriver(Session* session);
 
+    I2CDriver* getInstance() {
+        return s_instance;
+    }
+
     // parameter names
     static const std::string DEVICE;
-    /*
-    static const std::string MODE;
-    static const std::string SPEED;
-    static const std::string BITS_PER_WORD;
-    */
 
     bool ping(int address);
 
     void send(int address, const std::vector<uint8_t>& data);
 
+    void interrupt();
+
 private:
-    /*
-    void checkSession();
-
-    bool checkString(const std::string& key, std::string& value);
-
-    template <typename T>
-    bool checkInt(const std::string& key, T& value);
-    */
     void setAddress(int address);
+
+    // ReadReady pin listener related
+    static void launch(I2CDriver* driver);
+    static void ISR_ReadReady();
+    void threadmain();
 
 private:
     Session* m_session;
@@ -43,11 +45,15 @@ private:
 
     // cached I2C parameters
     std::string m_device;
-    /*
-    uint8_t m_mode;
-    uint32_t m_speed; // Hz
-    uint8_t m_bitsPerWord;
-    */
+
+    // GPIO pin number to listen on ReadReady
+    int m_pin_ReadReady;
+
+    boost::thread* m_thread;
+    pthread_mutex_t m_mutex;
+    pthread_cond_t m_cond;
+
+    static I2CDriver* s_instance; // singleton
 };
 
 #endif
