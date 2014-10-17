@@ -143,9 +143,10 @@ I2CDriver::ping(int address)
 {
     setAddress(address);
 
-    int result = write(m_fd, NULL, 0);
+    char data = 'p';
+    int result = write(m_fd, &data, 1);
 
-    return (result == 0);
+    return (result >= 0);
 }
 
 void
